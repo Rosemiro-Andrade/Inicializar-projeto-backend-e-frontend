@@ -1,10 +1,13 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
-const cors = require('cors');
+const path = require('path');
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+
+// =============================
+// BANCO
+// =============================
 
 const db = new sqlite3.Database('./database.db', (err) => {
     if (err) {
@@ -14,7 +17,6 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
-// Criar tabelas
 db.serialize(() => {
 
     db.run(`
@@ -49,19 +51,11 @@ db.serialize(() => {
 });
 
 // =============================
-// ROTAS
+// ROTAS API (prefixo /api)
 // =============================
 
-// Teste API
-app.get('/', (req, res) => {
-    res.json({ message: 'API monitoramento rodando 🚀' });
-});
-
-// =============================
 // STAGES
-// =============================
-
-app.post('/stages', (req, res) => {
+app.post('/api/stages', (req, res) => {
     const { nome } = req.body;
 
     db.run(
@@ -74,18 +68,15 @@ app.post('/stages', (req, res) => {
     );
 });
 
-app.get('/stages', (req, res) => {
+app.get('/api/stages', (req, res) => {
     db.all(`SELECT * FROM stages`, [], (err, rows) => {
         if (err) return res.status(400).json(err);
         res.json(rows);
     });
 });
 
-// =============================
 // MAQUINAS
-// =============================
-
-app.post('/maquinas', (req, res) => {
+app.post('/api/maquinas', (req, res) => {
     const { stage_id, nome } = req.body;
 
     db.run(
@@ -98,7 +89,7 @@ app.post('/maquinas', (req, res) => {
     );
 });
 
-app.get('/maquinas/:stage_id', (req, res) => {
+app.get('/api/maquinas/:stage_id', (req, res) => {
     db.all(
         `SELECT * FROM maquinas WHERE stage_id = ?`,
         [req.params.stage_id],
@@ -109,11 +100,8 @@ app.get('/maquinas/:stage_id', (req, res) => {
     );
 });
 
-// =============================
-// REGISTROS (Histórico)
-// =============================
-
-app.post('/registros', (req, res) => {
+// REGISTROS
+app.post('/api/registros', (req, res) => {
     const {
         maquina_id,
         quantidade_total,
@@ -134,8 +122,7 @@ app.post('/registros', (req, res) => {
     );
 });
 
-// Buscar histórico por máquina
-app.get('/registros/:maquina_id', (req, res) => {
+app.get('/api/registros/:maquina_id', (req, res) => {
     db.all(
         `SELECT *,
         (CAST(funcionando AS FLOAT) / quantidade_total) * 100 AS porcentagem
@@ -150,7 +137,25 @@ app.get('/registros/:maquina_id', (req, res) => {
     );
 });
 
-const PORT = 3000;
+// =============================
+// SERVIR ANGULAR BUILD
+// =============================
+
+const angularPath = path.join(__dirname, '../frontend/dist/frontend/browser');
+
+app.use(express.static(angularPath));
+
+// SPA fallback
+app.get('*', (req, res) => {
+    res.sendFile(path.join(angularPath, 'index.html'));
+});
+
+// =============================
+// PORTA DINÂMICA (OBRIGATÓRIO)
+// =============================
+
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
