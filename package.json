@@ -1,4 +1,16 @@
 {
+  "name": "dispo-maquinas",
+  "version": "1.0.0",
+  "description": "Dashboard de monitoramento de maquinas",
+  "main": "backend/server.js",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  },
   "devDependencies": {
     "concurrently": "^9.2.1"
   }
