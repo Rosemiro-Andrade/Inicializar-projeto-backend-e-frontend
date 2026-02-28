@@ -4,7 +4,7 @@
   "description": "Dashboard de monitoramento de maquinas",
   "main": "backend/server.js",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "npm --prefix frontend install && npm --prefix frontend run build",
     "start": "node backend/server.js"
   },
   "dependencies": {
