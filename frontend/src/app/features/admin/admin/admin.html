@@ -1,0 +1,64 @@
+<mat-card>
+  <h2>Criar Registro</h2>
+
+  <!-- Stage: selecionar ou digitar -->
+  <mat-form-field appearance="outline">
+    <mat-label>Selecione Stage</mat-label>
+    <mat-select [(ngModel)]="novoRegistro.stage_id">
+      <mat-option *ngFor="let stage of stages" [value]="stage.id">
+        {{ stage.nome }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Ou digite um novo Stage:</p>
+  <mat-form-field appearance="outline">
+    <mat-label>Novo Stage</mat-label>
+    <input matInput [(ngModel)]="novoRegistro.stage_nome" placeholder="Digite se não existir">
+  </mat-form-field>
+
+  <!-- Máquina: selecionar ou digitar -->
+  <mat-form-field appearance="outline">
+    <mat-label>Selecione Máquina</mat-label>
+    <mat-select [(ngModel)]="novoRegistro.maquina_id">
+      <ng-container *ngFor="let stage of stages">
+        <mat-optgroup [label]="stage.nome">
+          <mat-option *ngFor="let maquina of stage.maquinas ?? []" [value]="maquina.id">
+            {{ stage.nome }} - {{ maquina.nome }}
+          </mat-option>
+        </mat-optgroup>
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Ou digite uma nova Máquina:</p>
+  <mat-form-field appearance="outline">
+    <mat-label>Nova Máquina</mat-label>
+    <input matInput [(ngModel)]="novoRegistro.maquina_nome" placeholder="Digite se não existir">
+  </mat-form-field>
+
+  <!-- Registro -->
+  <mat-form-field appearance="outline">
+    <mat-label>Quantidade Total</mat-label>
+    <input matInput type="number" [(ngModel)]="novoRegistro.quantidade_total">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Funcionando</mat-label>
+    <input matInput type="number" [(ngModel)]="novoRegistro.funcionando">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Módulo</mat-label>
+    <input matInput [(ngModel)]="novoRegistro.modulo">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Slot Identificação</mat-label>
+    <input matInput [(ngModel)]="novoRegistro.slot_identificacao">
+  </mat-form-field>
+
+  <button mat-raised-button color="warn" (click)="criarRegistro()">
+    Criar Registro
+  </button>
+</mat-card>
