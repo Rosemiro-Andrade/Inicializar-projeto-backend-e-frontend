@@ -146,7 +146,7 @@ const angularPath = path.join(__dirname, '../frontend/dist/frontend/browser');
 app.use(express.static(angularPath));
 
 // SPA fallback
-app.get('*', (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(angularPath, 'index.html'));
 });
 
@@ -155,6 +155,25 @@ app.get('*', (req, res) => {
 // =============================
 
 const PORT = process.env.PORT || 3000;
+
+// =============================
+// ROTA ADMIN PROTEGIDA
+// =============================
+
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin123";
+
+app.post('/api/admin/update-dashboard', (req, res) => {
+    const token = req.headers['x-admin-token'];
+
+    if (!token || token !== ADMIN_TOKEN) {
+        return res.status(403).json({ error: 'Acesso negado' });
+    }
+
+    // Aqui você pode colocar lógica futura
+    // Por enquanto só confirma atualização
+
+    res.json({ message: 'Dashboard atualizado com sucesso!' });
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);

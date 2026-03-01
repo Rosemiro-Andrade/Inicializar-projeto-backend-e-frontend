@@ -35,4 +35,12 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/registros`, data);
   }
 
+  atualizarDashboard(token: string) {
+    return this.http.post(
+      `${this.apiUrl}/admin/update-dashboard`,
+      {},
+      { headers: { 'x-admin-token': token } }
+    );
+  }
+
 }

@@ -21,6 +21,8 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class AdminComponent implements OnInit {
 
+  tokenAdmin = '';
+
   novoRegistro = {
     stage_id: null as number | null,
     stage_nome: '',       // <- novo
@@ -38,6 +40,18 @@ export class AdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarStages();
+  }
+
+  atualizarDashboard() {
+    if (!this.tokenAdmin) {
+      alert('Digite o token!');
+      return;
+    }
+
+    this.api.atualizarDashboard(this.tokenAdmin).subscribe({
+      next: (res: any) => alert(res.message),
+      error: () => alert('Token inválido!')
+    });
   }
 
   carregarStages() {
