@@ -1,44 +1,42 @@
 <h1>Dashboard Geral</h1>
 
-<button mat-raised-button color="primary" (click)="atualizarDashboard()">
-  Atualizar Dashboard
-</button>
+<div class="dashboard-actions">
+  <button mat-raised-button color="primary" (click)="atualizarDashboard()">
+    Atualizar Dashboard
+  </button>
+
+  <!-- Filtro de data -->
+  <label>
+    Filtrar por data:
+    <input type="date" [value]="dataSelecionada" (change)="dataSelecionada = $any($event.target).value">
+  </label>
+</div>
 
 <mat-accordion multi>
-  <!-- Itera pelos stages -->
   <mat-expansion-panel *ngFor="let stage of stages">
     <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ stage.nome }}
-      </mat-panel-title>
-
+      <mat-panel-title>{{ stage.nome }}</mat-panel-title>
       <mat-panel-description>
-        <!-- Rosca de porcentagem -->
-        <mat-spinner
+        <mat-progress-spinner
           *ngIf="getPercentualStage(stage) !== 0"
           [mode]="'determinate'"
           [value]="getPercentualStage(stage)"
           [diameter]="50"
-          [strokeWidth]="6">
+          [strokeWidth]="6"
           [color]="getCor(getPercentualStage(stage))">
-        </mat-spinner>
-
+        </mat-progress-spinner>
         {{ getPercentualStage(stage) | number:'1.0-0' }}%
       </mat-panel-description>
     </mat-expansion-panel-header>
 
-    <!-- Itera pelas máquinas do stage -->
     <div *ngFor="let maquina of stage.maquinas" class="machine-card">
-      <!-- Clique para detalhes da máquina -->
       <h3 (click)="verDetalhes(maquina)" style="cursor:pointer;">
         {{ maquina.nome }}
       </h3>
 
-      <!-- Último registro da máquina -->
       <div *ngIf="getUltimoRegistro(maquina) as ultimo">
         <p>
-          Último registro: {{ ultimo.slot_identificacao }} — 
-          {{ ultimo.porcentagem | number:'1.0-0' }}%
+          Último registro: {{ ultimo.slot_identificacao }} — {{ ultimo.porcentagem | number:'1.0-0' }}%
         </p>
         <mat-progress-bar
           mode="determinate"
@@ -47,8 +45,7 @@
         </mat-progress-bar>
       </div>
 
-      <!-- Tabela de histórico de registros -->
-      <table *ngIf="(maquina.registros ?? []).length > 0">
+      <table *ngIf="getUltimosRegistros(maquina).length > 0">
         <thead>
           <tr>
             <th>Slot</th>
@@ -56,10 +53,11 @@
             <th>Total</th>
             <th>%</th>
             <th>Módulo</th>
+            <th>Data</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let registro of maquina.registros">
+          <tr *ngFor="let registro of getUltimosRegistros(maquina)">
             <td>{{ registro.slot_identificacao }}</td>
             <td>{{ registro.funcionando }}</td>
             <td>{{ registro.quantidade_total }}</td>
@@ -72,10 +70,20 @@
               {{ registro.porcentagem | number:'1.0-0' }}%
             </td>
             <td>{{ registro.modulo }}</td>
+            <td>{{ formatarData(registro.data_registro) }}</td>
+            <td>
+                <button mat-mini-fab color="primary" (click)="imprimirRegistro(registro, maquina)">
+                  🖨️ 
+                </button>
+            </td>
+            <td>
+                <button mat-raised-button color="accent" (click)="imprimirMaquina(maquina)">
+                  🖨️ Imprimir registros da {{ maquina.nome }}
+                </button>
+            </td>
           </tr>
         </tbody>
       </table>
-
     </div>
   </mat-expansion-panel>
 </mat-accordion>

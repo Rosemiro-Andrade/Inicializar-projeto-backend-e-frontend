@@ -156,24 +156,6 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-// =============================
-// ROTA ADMIN PROTEGIDA
-// =============================
-
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin123";
-
-app.post('/api/admin/update-dashboard', (req, res) => {
-    const token = req.headers['x-admin-token'];
-
-    if (!token || token !== ADMIN_TOKEN) {
-        return res.status(403).json({ error: 'Acesso negado' });
-    }
-
-    // Aqui você pode colocar lógica futura
-    // Por enquanto só confirma atualização
-
-    res.json({ message: 'Dashboard atualizado com sucesso!' });
-});
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
